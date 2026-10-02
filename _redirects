@@ -1,10 +1,14 @@
 # Redirecionamentos (compatível com Netlify e Cloudflare Pages).
 #
-# Todas as rotas já existem como arquivo estático real na raiz do site:
+# IMPORTANTE: este arquivo vale para publicar NA RAIZ — rode antes:
+#     node tools\rebase.js --root
+# (no GitHub Pages o base path /plinko-mania vale e este arquivo nao e usado.)
+#
+# Todas as rotas ja existem como arquivo estatico real na raiz do site:
 #   /jogar -> jogar/index.html, /salas -> salas/index.html, etc.
-# Rotas inexistentes caem automaticamente no 404.html (botão "Acessar agora")
-# nos dois hosts — por isso NÃO usamos catch-all aqui (um catch-all poderia
-# "sombrear" arquivos estáticos reais como /api/v1/* e /_next/*).
+# Rotas inexistentes caem automaticamente no 404.html (botao "Acessar agora")
+# nos tres hosts — por isso NAO usamos catch-all aqui (um catch-all poderia
+# "sombrear" arquivos estaticos reais como /api/* e /_next/*).
 #
 # Se precisar de um redirect, adicione abaixo no formato:
 #   /antigo    /novo    301

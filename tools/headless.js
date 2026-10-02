@@ -9,7 +9,8 @@ const CHROME = ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe']
   .find(p => fs.existsSync(p));
 const PORT = process.env.PORT || 8080;
-const SITE = process.env.SITE || ('http://localhost:' + PORT);
+const BASE = (() => { try { const b = require('./base'); return b ? (String(b).startsWith('/') ? String(b) : '/' + String(b)).replace(/\/+$/g, '') : ''; } catch (e) { return ''; } })();
+const SITE = process.env.SITE || ('http://localhost:' + PORT + BASE);
 
 const routes = process.argv.slice(2).filter(a => !a.startsWith('--'));
 const list = routes.length ? routes : JSON.parse(fs.readFileSync(path.join(__dirname, 'routes.json'), 'utf8'));

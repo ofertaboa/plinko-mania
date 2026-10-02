@@ -7,6 +7,9 @@ const fs = require('fs'), path = require('path'), http = require('http');
 
 const ROOT = path.resolve(__dirname, '..');
 const PORT = process.env.PORT || 8080;
+// base path do deploy (GitHub Pages de projeto) - ver tools/base.js
+const RAW = require('./base');
+const BASE = RAW ? (String(RAW).startsWith('/') ? String(RAW) : '/' + String(RAW)).replace(/\/+$/g, '') : '';
 const SKIP_DIRS = new Set(['tools', 'node_modules', '.git']);
 const TEXT = /\.(html|js|css|json|webmanifest|svg|txt|xml|m3u8)$/i;
 
@@ -37,9 +40,12 @@ function addRef(u, from) {
   if (u.includes('${')) return;   // template literal dinâmico (ex.: /images/avatars/${a}.svg)
   let p = u.split('?')[0].split('#')[0];
   if (!p) return;
-  if (!p.startsWith('/')) return; // relativas já foram resolvidas no crawl
+  if (!p.startsWith('/')) return; // as relativas ja foram resolvidas no crawl
   try { p = decodeURIComponent(p); } catch (e) { }
   if (p.endsWith('/')) p += 'index.html';
+  // no disco os arquivos ficam SEM o base path (o base so existe no texto)
+  if (BASE && (p === BASE || p.startsWith(BASE + '/'))) p = p.slice(BASE.length) || '/';
+  if (p === '/') p = '/index.html';
   if (!refs.has(p)) refs.set(p, from);
 }
 
@@ -71,13 +77,13 @@ const probe = p => new Promise(res => {
 (async () => {
   let bad = 0;
   for (const r of routes) {
-    const res = await probe(r === '/' ? '/' : r + '/');
+    const res = await probe(BASE + (r === '/' ? '/' : r + '/'));
     const ok = res.code === 200 && /text\/html/.test(res.type);
     if (!ok) bad++;
     console.log('  ' + (ok ? 'OK   ' : 'FALHA') + ' ' + String(res.code).padEnd(4) + ' ' + r);
   }
   // rota inexistente deve cair no 404.html
-  const nf = await probe('/rota-que-nao-existe');
+  const nf = await probe(BASE + '/rota-que-nao-existe');
   const nfOk = nf.code === 404;
   console.log('  ' + (nfOk ? 'OK   ' : 'FALHA') + ' ' + String(nf.code).padEnd(4) + ' (404.html)');
 

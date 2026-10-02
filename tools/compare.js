@@ -12,6 +12,8 @@ const CHROME = ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'].find(p => fs.existsSync(p));
 const ORIGIN = 'https://plinkopremiado.online';
 const LOCAL = process.argv[2] || 'http://localhost:8080';
+// base path do deploy (GitHub Pages de projeto) - ver tools/base.js
+const BASE = (() => { try { const b = require('./base'); return b ? (String(b).startsWith('/') ? String(b) : '/' + String(b)).replace(/\/+$/g, '') : ''; } catch (e) { return ''; } })();
 const ROUTES = JSON.parse(fs.readFileSync('C:\\Users\\Oestyx\\Downloads\\7\\tools\\routes.json', 'utf8'));
 
 const norm = t => t.replace(/\s+/g, ' ').trim();
@@ -65,12 +67,13 @@ function words(s) { return new Set(s.split(' ').filter(Boolean)); }
     const sóOrigem = [...ta].filter(w => !tb.has(w));
     const sóLocal = [...tb].filter(w => !ta.has(w));
     const ratio = ta.size ? 1 - sóOrigem.length / ta.size : 1;
-    const ok = ratio > 0.97 && sóLocal.length < 12 && A.path === B.path;
+    const localPath = (B.path || '').slice(BASE.length) || '/';
+    const ok = ratio > 0.97 && sóLocal.length < 12 && A.path === localPath;
     if (!ok) bad++;
     console.log((ok ? 'OK    ' : 'DIF   ') + r.padEnd(22) +
       'origem=' + String(ta.size).padStart(4) + ' local=' + String(tb.size).padStart(4) +
       ' cobertura=' + (ratio * 100).toFixed(1) + '%' +
-      ' sóLocal=' + sóLocal.length + (A.path !== B.path ? ' PATH ' + A.path + ' vs ' + B.path : ''));
+      ' sóLocal=' + sóLocal.length + (A.path !== localPath ? ' PATH ' + A.path + ' vs ' + B.path : ''));
     if (!ok) {
       if (sóOrigem.length) console.log('        só na origem: ' + sóOrigem.slice(0, 25).join(' | '));
       if (sóLocal.length) console.log('        só no local : ' + sóLocal.slice(0, 25).join(' | '));

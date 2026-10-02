@@ -1,6 +1,9 @@
-# Netlify — site 100% estático (HTML/JS/CSS/imagens/áudios/vídeos locais)
-# Publique arrastando a pasta em app.netlify.com ou conectando o repositório.
-# Redirects / headers estão no arquivo _redirects (lido automaticamente).
+# Netlify — site 100% estatico (HTML/JS/CSS/imagens/audios/videos locais)
+# Publique arrastando a pasta em app.netlify.com ou conectando o repositorio.
+# Redirects / headers estao no arquivo _redirects (lido automaticamente).
+#
+# ATENCAO: o repositorio esta com base path /plinko-mania (GitHub Pages).
+# Para o Netlify (raiz) rode antes:  node tools\rebase.js --root
 
 [build]
   publish = "."

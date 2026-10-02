@@ -4,6 +4,9 @@ const http = require('http'), fs = require('fs'), path = require('path'), url = 
 
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 8080);
+// base path do deploy (GitHub Pages de projeto) - ver tools/base.js
+const RAW = require('./base');
+const BASE = RAW ? (String(RAW).startsWith('/') ? String(RAW) : '/' + String(RAW)).replace(/\/+$/g, '') : '';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8',
@@ -61,6 +64,13 @@ const server = http.createServer((req, res) => {
   p = p.replace(/\\/g, '/');
   if (p.includes('..')) { res.writeHead(400); return res.end('bad request'); }
 
+  // o navegador enxerga /plinko-mania/... ; internamente lidamos com o caminho da app
+  if (BASE) {
+    if (p === BASE) p = '/';
+    else if (p.startsWith(BASE + '/')) p = p.slice(BASE.length);
+    else { res.writeHead(307, { Location: p === '/' ? BASE + '/' : BASE + p }); return res.end(); }
+  }
+
   const tryPaths = [];
   if (p.endsWith('/')) tryPaths.push(path.join(ROOT, p, 'index.html'));
   else tryPaths.push(path.join(ROOT, p));
@@ -70,7 +80,7 @@ const server = http.createServer((req, res) => {
     const dirIdx = path.join(ROOT, p, 'index.html');
     if (fs.existsSync(dirIdx)) {
       if (req.method === 'HEAD' || req.method === 'GET') {
-        res.writeHead(301, { Location: p + '/' + (url.parse(req.url).search || '') });
+        res.writeHead(301, { Location: BASE + p + '/' + (url.parse(req.url).search || '') });
         return res.end();
       }
     }
@@ -89,6 +99,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log('Servidor estatico: http://localhost:' + PORT + '/');
-  console.log('Raiz: ' + ROOT);
+  console.log('Servidor estatico: http://localhost:' + PORT + (BASE || '') + '/');
+  console.log('Raiz: ' + ROOT + (BASE ? '   (base path: ' + BASE + ')' : '   (base path: raiz)'));
 });
