@@ -1,0 +1,5 @@
+# Cloudflare Pages — site 100% estático
+# Deploy: npx wrangler pages deploy .   (ou conecte o repositório no dashboard)
+name = "plinko-mania"
+pages_build_output_dir = "."
+compatibility_date = "2026-01-01"

@@ -1,0 +1,25 @@
+# Netlify — site 100% estático (HTML/JS/CSS/imagens/áudios/vídeos locais)
+# Publique arrastando a pasta em app.netlify.com ou conectando o repositório.
+# Redirects / headers estão no arquivo _redirects (lido automaticamente).
+
+[build]
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Cada rota já existe como arquivo estático real (raiz do domínio):
+#   /                  -> index.html
+#   /jogar             -> jogar/index.html
+#   /salas             -> salas/index.html
+#   /missoes           -> missoes/index.html
+#   /premios           -> premios/index.html
+#   /depositar         -> depositar/index.html
+#   /sacar             -> sacar/index.html
+#   /extrato           -> extrato/index.html
+#   /perfil            -> perfil/index.html
+#   /indique           -> indique/index.html
+#   /cadastrar         -> cadastrar/index.html
+#   /entrar            -> entrar/index.html
+#   /sobre /termos /privacidade /suporte /jogo-responsavel /seguranca
+#   qualquer outra rota -> 404.html (com botão "Acessar agora")
